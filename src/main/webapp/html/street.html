@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../easyui/css/demo.css">
+    <script src="../easyui/jquery-1.8.3.min.js"></script>
+    <script src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        //上下文
+        function getContextPath() {
+            var contextPath = document.location.pathname;
+            var index = contextPath.substr(1).indexOf("/");
+            contextPath = contextPath.substr(0, index + 1);
+            delete index;
+            return contextPath;
+        }
+        //全局变量
+        var url;
+        $(document).ready(
+            function() {
+                $("#tb").datagrid({
+                    url:getContextPath()+"/Street/getAll",
+                    pagination:true,
+                    toolbar:"#toolbar",
+                    pageList:[3,6,9,12],
+                    pageNumber:1,
+                    fitColumns:true,
+                    fit:true,
+                    columns:[[
+                        {field:'cb',checkbox:true},
+                        {field:'id',title:'ID',width:'25%',align:'center'},
+                        {field:'name',title:'街道',width:'25%',align:'center'},
+                        {field:'districtId',title:'区域',width:'25%',align:'center'},
+                        {field:'ope',title:'操作',width:'25%',align:'center',
+                            formatter:function () {
+                                return ["<a href='javascript:deleteStreet()'>删除</a>"].join("");
+                            }
+                        }
+                    ]]
+                })
+            }
+        );
+        //添加
+        function addStreet() {
+            $("#addDialog").dialog("open").dialog("setTitle","添加数据");
+            url=getContextPath()+"/Street/insert";
+        }
+        //修改
+        function updateStreet() {
+            var selectRows=$("#tb").datagrid("getSelections");
+            if(selectRows.length!=1){
+                $.messager.alert("系统提示","请选择一条数据","warning");
+                return;
+            }
+            var selectRow=selectRows[0];
+            $("#addDialog").dialog("open").dialog("setTitle","编辑数据");
+            $("#DiaLogFormModify").form("load",selectRow);
+            url=getContextPath()+"/Street/update";
+        }
+        //删除
+        function deleteStreet() {
+            var selectRows=$("#tb").datagrid("getSelections");
+            if(selectRows.length<1){
+                $.messager.alert("友情提示","最少删除一个啦","info");
+                return;
+            }
+            var selectIndexArr=[];
+            for (var i = 0; i < selectRows.length; i++) {
+                selectIndexArr.push(selectRows[i].id);
+            }
+            var selectIndexToString=selectIndexArr.join(",");
+            $.messager.confirm("友情提示","确认删除这"+"<font color='#dc143c'>"
+                +selectRows.length+"条数据吗？</font>",function (xo) {
+                if(xo){
+                    $.post(
+                        getContextPath()+"/Street/deleteBySomething",
+                        {ids:selectIndexToString},
+                        function (result) {
+                            $.messager.alert("系统提示",result.result>0?"已删除<font color='#dc143c'>"+result.result+"条数据</font>":
+                                "<font color='#dc143c'>服务器繁忙</font>","info",function () {
+                                    $("#tb").datagrid("reload");
+                                })
+                        },
+                        "json"
+                    )
+                }
+            },"question");
+
+        }
+        //清空
+        function ResetValues(){
+            $("#addDialog input").val("");
+            $($("#addDialog option")[0]).attr("selected",true);
+        }
+        //form表单加载区域信息
+        $("#choose").ready(
+            function () {
+                $.post(getContextPath()+"/District/getDistrict",
+                    function (result) {
+                        var districtList=result.rows;
+                        var $choose=$("#choose");
+                        var option=[];
+                        for (var i = 0; i < districtList.length; i++) {
+                            option[i]=["<option value=",districtList[i].id,">",districtList[i].name,"</option>"].join("");
+                            $choose.append($(option[i]));
+                        }
+                    }
+                    ,"json")
+            }
+        );
+        //保存
+        function SaveDialog() {
+            $("#DiaLogFormModify").form("submit",{
+                url:url,
+                onSubmit:function () {
+                    return $(this).form('validate')
+                },
+                success:function (result) {
+                    console.log("添加："+result);
+                    var obj=$.parseJSON(result);
+                    $.messager.alert("系统提示",obj.result>=1?"保存成功":"服务器错误","info",function () {
+                            ResetValues();
+                    });
+                    $("#addDialog").dialog("close");//关闭
+                    $("#tb").datagrid("reload");//刷新
+                }
+            });
+        }
+    </script>
+
+</head>
+<body>
+<table id="tb">
+
+</table>
+<div id="toolbar">
+    <div style="height: 40px;">
+        <a href="javascript:addStreet();" class="easyui-linkbutton"
+           iconCls="icon-add" plain="true">添加</a> <a
+            href="javascript:updateStreet()" class="easyui-linkbutton"
+            iconCls="icon-edit" plain="true">修改</a> <a
+            href="javascript:deleteStreet()" class="easyui-linkbutton"
+            iconCls="icon-remove" plain="true">删除</a>
+    </div>
+</div>
+<div id="addDialog" class="easyui-dialog" buttons="#AddDialogButtons"
+     style="width: 280px; height: 250px; padding: 10px 20px;" closed="true">
+    <form id="DiaLogFormModify">
+        <table>
+            <tr>
+                <td>ID:</td>
+                <td><input type="text" readonly="readonly" name="id"></td>
+            </tr>
+            <tr>
+                <td>街道:</td>
+                <td><input type="text" name="name"/></td>
+            </tr>
+            <tr>
+                <td>区域</td>
+                <td><select id="choose" name="districtId"></select></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="AddDialogButtons">
+    <a href="javascript:SaveDialog()" class="easyui-linkbutton" iconCls="icon-ok">保存</a>
+    <a href="javascript:CloseDialog()" class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
+</div>
+</body>
+</html>

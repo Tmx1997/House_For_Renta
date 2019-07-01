@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../easyui/css/demo.css">
+	<script src="../easyui/jquery-1.8.3.min.js"></script>
+	<!--jquery.easyui.min.js包含了easyUI中的所有插件-->
+	<script src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        function getContextPath() {
+            var contextPath = document.location.pathname;
+            var index = contextPath.substr(1).indexOf("/");
+            contextPath = contextPath.substr(0, index + 1);
+            delete index;
+            return contextPath;
+        }
+        $(function () {
+            $("#data").datagrid({
+                url:getContextPath()+"/District/getAll",
+                toolbar:"#ToolBar",
+                fit:true,
+                pagination:true,
+                pageList:[3,6,9,12],
+                pageSize:3
+            })
+        });
+        function format(value,row,index) {
+            var arrToString=["<a href='javascript:messageForStreet(",row.id,")'>","查看街道</a>||","<a href='javascript:delSingle(",row.id,",","\"",row.name,"\"",")'>删除<","/a>"].join("");
+            return arrToString;
+        }
+        function messageForStreet(id) {
+            $("#street").dialog("open").dialog("setTitle","区域详情");
+            $("#tb").datagrid({
+                url:getContextPath()+"/District/selectStreetById",
+                pagination:true,
+                toolbar:"#streetToolbar",
+                pageList:[3,6,9,12],
+                pageNumber:1,
+                queryParams:{"startId":id},
+                fitColumns:true,
+                fit:true,
+                columns:[[
+                    {field:'cb',checkbox:true},
+                    {field:'id',title:'ID',width:'25%',align:'center'},
+                    {field:'name',title:'街道',width:'25%',align:'center'},
+                    {field:'districtId',title:'区域',width:'25%',align:'center'},
+                    {field:'ope',title:'操作',width:'25%',align:'center',
+                        formatter:function () {
+                            return ["<a href='javascript:deleteStreet()'>删除</a>"].join("");
+                        }
+                    }
+                ]]
+            })
+        }
+        function delSingle(id,name) {
+            var arr=[id];
+
+            $.messager.confirm("系统提示", "你确定要删除<font color=red> " + name + " </font>吗?",function (xo) {
+                if(xo){
+                    $.post(getContextPath()+"/District/deleteBySomething",
+                        {xhs:arr.join(",")},
+                        function (result) {
+                        if(result.result){
+                            $.messager.alert("系统提示","成功删除<font color='red'>"+ name +"</font>")
+                            $("#data").datagrid('reload');
+                        }else {
+                            $.messager.alert("系统提示","<font>删除失败</font>")
+                        }
+                        }
+                    ,"json")
+                }
+            });
+
+        }
+    </script>
+
+</head>
+<body>
+
+	<table id="data" title="用户" class="easyui-datagrid">
+		<thead>
+			<tr>
+				<!--<th field="cb" checkbox="true"></th>-->
+				<th field="id" width="33%" >ID</th>
+				<th field="name" width="33%">区域</th>
+                <th width="33%"  field="opt" formatter="format">操作</th>
+            </tr>
+        </thead>
+	</table>
+	
+	<div id="ToolBar">
+		<div style="height: 40px;">
+			<a href="javascript:Add()" class="easyui-linkbutton"
+				iconCls="icon-add" plain="true">添加</a> <a
+				href="javascript:ModifyBySelect()" class="easyui-linkbutton"
+				iconCls="icon-edit" plain="true">修改</a> <a
+				href="javascript:DeleteByFruitName()" class="easyui-linkbutton"
+				iconCls="icon-remove" plain="true">删除</a>
+		</div>
+	</div>
+	<div id="streetToolbar">
+		<div style="height: 40px;">
+			<a href="javascript:addStreet();" class="easyui-linkbutton"
+			   iconCls="icon-add" plain="true">添加</a> <a
+				href="javascript:updateStreet()" class="easyui-linkbutton"
+				iconCls="icon-edit" plain="true">修改</a> <a
+				href="javascript:deleteStreet()" class="easyui-linkbutton"
+				iconCls="icon-remove" plain="true">删除</a>
+		</div>
+	</div>
+ 
+	<div id="AddDialog" class="easyui-dialog" buttons="#AddDialogButtons"
+		style="width: 280px; height: 250px; padding: 10px 20px;" closed="true">
+		<form id="ModiyDialogForm" method="post">
+			<table>
+				<tr>
+					<td>ID:</td>
+					<td><input type="text" class="easyui-validatebox"
+					readonly="readonly"	name="id" id="id" /></td>
+				</tr>
+				<tr>
+					<td>区域:</td>
+					<td><input type="text" name="name" id="name" required="required"/></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+    <div id="street" class="easyui-dialog"  closed="true"
+    style="width: 600px;height: 400px;">
+        <table id="tb"></table>
+    </div>
+ 
+	<div id="AddDialogButtons">
+		<a href="javascript:SaveDialog()" class="easyui-linkbutton"
+			iconCls="icon-ok">保存</a> <a href="javascript:CloseDialog()"
+			class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
+	</div>
+ 
+	<script type="text/javascript" src="../js/DistrctCRUD.js"></script>
+</body>
+</html>

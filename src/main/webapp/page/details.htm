@@ -1,0 +1,76 @@
+﻿<HTML xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>青鸟租房 -发布房屋信息</TITLE>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type><LINK 
+rel=stylesheet type=text/css href="../css/style.css">
+<META name=GENERATOR content="MSHTML 8.00.7601.17514">
+    <script src="../easyui/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../js/util.js"></script>
+</HEAD>
+<BODY>
+
+<DIV id=header class=wrap>
+<DIV id=logo><IMG src="../images/logo.gif"></DIV>
+    <DIV class=search>
+        <LABEL class="ui-green searchs"><a href="javascript:window.location=getContextPath()+'/page/guanli.htm'" title="">管理房屋信息</a></LABEL>
+        <span id="welcome" style="color: gold"></span><LABEL class="ui-green searchs"><a href="javascript:window.location=getContextPath()+'/page/publish.htm'" title="">发布房屋信息</a></LABEL>
+        <LABEL class=ui-green><INPUT onclick='logOut()' value="退       出" type=button name=search></LABEL></DIV>
+
+
+<DIV id=position class=wrap>当前位置：青鸟租房网 - 浏览房源</DIV>
+<DIV id=view class="main wrap">
+<DIV class=intro id="app">
+<DIV class=lefter v-if="house!=null">
+<H1>{{house.title}}</H1>
+<DIV class=subinfo>{{dateFormat()}}</DIV>
+<DIV class=houseinfo>
+<P>户　　型：<SPAN>{{house.type.name}}</SPAN></P>
+<P>面　　积：<SPAN>{{house.floorage}}m<SUP>2</SUP></SPAN></P>
+<P>位　　置：<SPAN>{{house.district.name}}区{{house.street.name}}</SPAN></P>
+<P>联系方式：<SPAN>{{house.contact}}</SPAN></P></DIV></DIV>
+<DIV class=side>
+<P><A class=bold href="http://localhost:8080/House-2/#">北京青鸟房地产经纪公司</A></P>
+<P>资质证书：有</P>
+<P>内部编号:1000</P>
+<P>联 系 人：</P>
+<P>联系电话：<SPAN></SPAN></P>
+<P>手机号码：<SPAN>暂无</SPAN></P></DIV>
+<DIV class=clear></DIV>
+<DIV class=introduction>
+<H2><SPAN><STRONG>房源详细信息</STRONG></SPAN></H2>
+<DIV class=content>
+<P>就是好</P></DIV></DIV></DIV></DIV>
+<DIV id=footer class=wrap>
+<DL>
+  <DT>青鸟租房 © 2018 北大青鸟 京ICP证1000001号</DT>
+  <DD>关于我们 · 联系方式 · 意见反馈 · 帮助中心</DD></DL></DIV>
+</BODY>
+<script type="text/javascript">
+    var vm=new Vue({
+        el:"#app",
+        data:{
+            id:0,
+            house:null
+        },
+        methods:{
+            dateFormat(){
+                var date=new Date(this.house.pubdate)
+                var year=date.getFullYear();
+                var month=date.getMonth();
+                var day=date.getDate();
+                return year+"年"+month+"月"+day+"日";
+            }
+        },
+        mounted:function () {
+            var that=this;
+            axios.get(getContextPath()+"/HouseRent/queryByHouseId?id="+UrlParm.parm("id"))
+                .then(
+                    function (response) {
+                        that.house=response.data;
+                        console.log(response);
+                    }
+                )
+        }
+    });
+</script>
+</HTML>

@@ -1,0 +1,240 @@
+﻿<HTML xmlns="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<HEAD><TITLE>青鸟租房 -发布房屋信息</TITLE>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <LINK
+            rel=stylesheet type=text/css href="../css/style.css">
+    <META name=GENERATOR content="MSHTML 8.00.7601.17514">
+    <script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="../js/util.js"></script>
+    <script src="http://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" type="text/javascript"></script>
+    <script src="https://cdn.bootcss.com/qs/6.5.1/qs.min.js"></script>
+    <script type="text/javascript">
+        //cookie判断未登录则返回登录页面
+        logDetector();
+        //页眉
+        $("#welcome").ready(
+            function () {
+                getPageHeader()
+            }
+        );
+        $("#userId").ready(function () {
+            var id = getCookie("userId");
+            console.log(id);
+            $("#userId").val(id);
+            console.log("2:" + $("#userId").val());
+        });
+        //获取类型
+        $("#type_id").ready(
+            function () {
+                $.post(
+                    getContextPath() + "/Type/getAll",
+                    function callback(result) {
+                        var types = result.rows;
+                        var option = [];
+                        for (var i = 0; i < types.length; i++) {
+                            option[i] = ["<option value='", types[i].id, "'>", types[i].name, "</option>"].join("");
+                            $("#type_id").append(option[i]);
+                        }
+
+                    }
+                    , "json")
+            }
+        );
+        //节点(district_id)加载后获取区域
+        $("#district_id").ready(
+            function () {
+                $.post(
+                    getContextPath() + "/District/getDistrict",
+                    function callback(result) {
+                        loadSelect("#district_id", result);
+                        getStreet(result.rows[0].id);
+
+                    }
+                    , "json")
+            }
+        );
+        //获取街道
+        $("#street_id").ready(
+            function () {
+                $("#district_id").change(
+                    function () {
+                        getStreet($(this).val())
+                    }
+                )
+            }
+        );
+
+        //getStreet通用方法
+        function getStreet(id) {
+            $("#street_id").empty();
+            var option = ["<option>", "--请选择--", "</option>"].join("");
+            $("#street_id").append(option);
+            $.post(
+                getContextPath() + "/District/getStreets",
+                {dId: id},
+                function (result) {
+                    loadSelect("#street_id", result);
+                }
+                , "json")
+        }
+
+        //加载下拉框回调函数
+        function loadSelect(id, result) {
+            var data = result.rows;
+            var option = [];
+            var value;
+            var html;
+            for (var i = 0; i < data.length; i++) {
+                html = data[i].name;
+                value = data[i].id;
+                option[i] = ["<option value='", value, "'>", html, "</option>"].join("");
+                if (vm.$data.house != null) {
+                    if (id == '#street_id' && vm.$data.house.street.id === value) {
+                        console.log(option[i].value);
+                        console.log("控制器的:" + vm.$data.house.street.id);
+                        $(option[i]).attr("selected", "selected")
+                    }
+                    if (id == '#district_id' && vm.$data.house.district.id === value) {
+                        $(option[i]).attr("selected", "selected");
+                        console.log(option[i].value);
+                        console.log("控制器的:" + vm.$data.house.street.id);
+                    }
+                }
+                $(id).append(option[i]);
+            }
+        }
+
+        //表单提交
+        function houseRent() {
+            $("#add_action").attr("action", getContextPath() + "/HouseRent/publishHouse");
+            $("#add_action").submit();
+        }
+
+    </script>
+</HEAD>
+<BODY>
+<DIV id=header class=wrap>
+    <DIV id=logo><IMG src="../images/logo.gif"></DIV>
+    <DIV class=search><span id="welcome" style="color: gold"></span><LABEL class="ui-green searchs"><a
+            href="javascript:window.location=getContextPath()+'/page/guanli.htm'" title="">管理房屋信息</a></LABEL>
+        <LABEL class=ui-green><INPUT onclick="logOut()" value="退       出" type=button name=search></LABEL>
+    </DIV>
+</DIV>
+<DIV id=regLogin class=wrap>
+    <DIV class=dialog>
+        <DL class=clearfix>
+            <DT>新房屋信息发布</DT>
+            <DD class=past>填写房屋信息</DD>
+        </DL>
+        <DIV class=box>
+            <FORM id=add_action method=post enctype="multipart/form-data" action="">
+                <DIV class=infos>
+                    <TABLE class=field>
+                        <TBODY>
+                        <TR>
+                            <TD><INPUT id=userId class=text type=hidden name=userId></TD>
+                        </TR>
+                        <TR>
+                        <TR>
+                            <TD class=field>标　　题：</TD>
+                            <TD><INPUT id=add_action_title class=text type=text name=title
+                                       v-bind:value="house!=null?house.title:''"></TD>
+                        </TR>
+                        <TR>
+                            <TD class=field>户　　型：</TD>
+                            <TD><SELECT class=text name=typeId id="type_id"></SELECT></TD></TR>
+                        <TR>
+                            <TD class=field>面　　积：</TD>
+                            <TD><INPUT id=add_action_floorage class=text type=text
+                                       name=floorage v-bind:value="house!=null?house.floorage:''"></TD>
+                        </TR>
+                        <TR>
+                            <TD class=field>价　　格：</TD>
+                            <TD><INPUT id=add_action_price class=text type=text name=price
+                                       v-bind:value="house!=null?house.price:''"></TD>
+                        </TR>
+                        <TR>
+                            <TD class=field>发布日期：</TD>
+                            <TD><INPUT class=text type="date" name=pubdate v-bind:value="house!=null?date:null"></TD>
+                        </TR>
+                        <TR>
+                            <TD class=field>位　　置：</TD>
+                            <TD>区：<SELECT class=text id="district_id"></SELECT> 街：<SELECT class=text
+                                                                                          name=streetId
+                                                                                          id="street_id"></SELECT></TD>
+                        </TR>
+                        <TR>
+                            <TD class=field>图片信息：</TD>
+                            <div>
+                                <TD><img src="#" width="140" height="100" id="img01" style="display: none"/>
+                                    <INPUT id=picture type="file" name=picture onchange="changePicture(this)"
+                                           v-bind:value="house!=null?filePath:''"></TD>
+                            </div>
+                        </TR>
+                        <TR>
+                        <TR>
+                            <TD class=field>联系方式：</TD>
+                            <TD><INPUT id=add_action_contact class=text type=text name=contact
+                                       v-bind:value="house!=null?house.contact:''"></TD>
+                        </TR>
+                        <TR>
+                            <TD class=field>详细信息：</TD>
+                            <TD><TEXTAREA name=description>{{house!=null?house.description:''}}</TEXTAREA></TD>
+                        </TR>
+                        </TBODY>
+                    </TABLE>
+                    <DIV class=buttons><INPUT onclick="javascript:houseRent();" value="立即发布" type="button">
+                    </DIV>
+                </DIV>
+            </FORM>
+        </DIV>
+    </DIV>
+</DIV>
+<DIV id=footer class=wrap>
+    <DL>
+        <DT>青鸟租房 © 2018 北大青鸟 京ICP证1000001号</DT>
+        <DD>关于我们 · 联系方式 · 意见反馈 · 帮助中心</DD>
+    </DL>
+</DIV>
+</BODY>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#add_action",
+        data: {
+            house: null,
+            date: null,
+            filePath: ''
+        },
+        methods:{
+            timestampToTime (row, column) {
+                var date = new Date(row.cjsj) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+                var Y = date.getFullYear() + '-'
+                var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
+                var D = date.getDate() + ' '
+                var h = date.getHours() + ':'
+                var m = date.getMinutes() + ':'
+                var s = date.getSeconds()
+                return Y+M+D+h+m+s
+                console.log(timestampToTime (1533293827000))
+            }
+        },
+        mounted: function () {
+            var hid = UrlParm.parm("id");
+            if (hid == null || hid == '') {
+                return;
+            }
+            var obj = {id: hid};
+            var that = this;
+            axios.post(getContextPath() + "/HouseRent/queryByHouseId", Qs.stringify(obj))
+                .then(function (response) {
+                    console.log(response);
+                    that.house = response.data;
+                    that.date =that.methods.timestampToTime(response.data.pubdate);
+                    that.filePath = "http://localhost:81/" + response.data.path;
+                })
+        }
+    });
+</script>
+</HTML>

@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../easyui/css/demo.css">
+	<script src="../easyui/jquery-1.8.3.min.js"></script>
+	<!--jquery.easyui.min.js包含了easyUI中的所有插件-->
+	<script src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        function getContextPath() {
+            var contextPath = document.location.pathname;
+            var index = contextPath.substr(1).indexOf("/");
+            contextPath = contextPath.substr(0, index + 1);
+            delete index;
+            return contextPath;
+        }
+        $(function () {
+            $("#data").datagrid({
+                url:getContextPath()+"/Users/getUsers",
+                toolbar:"#ToolBar",
+                fitColumns:true,
+                fit:true,
+                pagination:true,
+                pageList:[3,6,9,12],
+                pageSize:1
+            })
+        })
+        function searchUsers() {
+            var obj=$("#query").serializeObject();
+            console.log(obj);
+            $("#data").datagrid("load",obj);
+        }
+        //form表单序列化json对象
+        $.fn.serializeObject = function() {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [ o[this.name] ];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        }
+    </script>
+
+</head>
+<body>
+	<table id="data" title="用户" class="easyui-datagrid">
+		<thead>
+			<tr>
+				<!--<th field="cb" checkbox="true"></th>-->
+				<th field="id" width="100px">ID</th>
+				<th field="name" width="100px">用户名</th>
+				<th field="password" width="100px">密码</th>
+				<th field="telephone" width="100px">联系方式</th>
+				<th field="isadmin" width="100px">管理员</th>
+			</tr>
+		</thead>
+	</table>
+	
+	<div id="ToolBar">
+		<div style="height: 40px;">
+			<a href="javascript:Add()" class="easyui-linkbutton"
+				iconCls="icon-add" plain="true">添加</a> <a
+				href="javascript:ModifyBySelect()" class="easyui-linkbutton"
+				iconCls="icon-edit" plain="true">修改</a> <a
+				href="javascript:DeleteByFruitName()" class="easyui-linkbutton"
+				iconCls="icon-remove" plain="true">删除</a>
+		</div>
+		<div>
+			<form id="query" method="post">
+                用户名:<input type="text" name="name">
+                开始ID:<input type="text" name="startId">-
+                结束ID:<input type="text" name="endId">
+                电话:<input type="text" name="telephone">
+                <a class="easyui-linkbutton" iconCls="icon-search" href="javascript:searchUsers()"></a>
+            </form>
+		</div>
+	</div>
+ 
+	<div id="AddDialog" class="easyui-dialog" buttons="#AddDialogButtons"
+		style="width: 280px; height: 250px; padding: 10px 20px;" closed="true">
+		<form id="ModiyDialogForm" method="post">
+			<table>
+				<tr>
+					<td>ID:</td>
+					<td><input type="text" class="easyui-validatebox" required
+						name="id" id="id" /></td>
+				</tr>
+				<tr>
+					<td>用户名:</td>
+					<td><input type="text" name="name" id="name" /></td>
+				</tr>
+				<tr>
+					<td>密码:</td>
+					<td><input type="text" name="password" id="password"></td>
+				</tr>
+				<tr>
+					<td>联系方式:</td>
+					<td>
+						<input type="text" name="telephone" id="telephone"/>
+					</td>
+				</tr>
+                <tr>
+					<td>权限:</td>
+					<td>
+						<input type="text" name="isadmin" id="isadmin"/>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+ 
+	<div id="AddDialogButtons">
+		<a href="javascript:SaveDialog()" class="easyui-linkbutton"
+			iconCls="icon-ok">保存</a> <a href="javascript:CloseDialog()"
+			class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
+	</div>
+ 
+	<script type="text/javascript" src="../js/MyEasyUICRUD.js"></script>
+</body>
+</html>

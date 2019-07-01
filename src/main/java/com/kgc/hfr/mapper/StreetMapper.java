@@ -1,0 +1,34 @@
+package com.kgc.hfr.mapper;
+
+import com.kgc.hfr.entity.Street;
+import com.kgc.hfr.entity.StreetExample;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
+public interface StreetMapper {
+    long countByExample(StreetExample example);
+
+    int deleteByExample(StreetExample example);
+
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(Street record);
+
+    int insertSelective(Street record);
+
+    List<Street> selectByExample(StreetExample example);
+
+    Street selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") Street record, @Param("example") StreetExample example);
+
+    int updateByExample(@Param("record") Street record, @Param("example") StreetExample example);
+
+    int updateByPrimaryKeySelective(Street record);
+
+    int updateByPrimaryKey(Street record);
+
+	int deleteByDid(Integer id);
+
+	int deleteBySomething(Integer[] ids);
+}
