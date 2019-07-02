@@ -68,6 +68,7 @@ public class FileUploadUtil {
 		String savePath = datePath + "\\" + uuidPath + lastPath;
 		String endPath = targetPath + savePath;
 		File f=new File(endPath);
+		System.out.println(f);
 		try {
 			picture.transferTo(f);
 		} catch (IOException e) {

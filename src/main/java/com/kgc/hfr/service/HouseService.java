@@ -30,7 +30,7 @@ public interface HouseService {
 
     int updateByExample(@Param("record") House record, @Param("example") HouseExample example);
 
-    int updateByPrimaryKeySelective(House record);
+    int updateByPrimaryKeySelective(String targetPath,House record,CommonsMultipartFile picture);
 
     int updateByPrimaryKey(House record);
 }

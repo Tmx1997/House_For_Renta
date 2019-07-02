@@ -14,7 +14,9 @@ rel=stylesheet type=text/css href="../css/style.css">
 <BODY>
 <DIV id=header class=wrap>
 <DIV id=logo><IMG src="../images/logo.gif"></DIV>
-<DIV class=search><span id="welcome" style="color: gold"></span><LABEL class="ui-green searchs"><a href="javascript:publish()" title="">发布房屋信息</a></LABEL>
+<DIV class=search><span id="welcome" style="color: gold"></span>
+    <LABEL class="ui-green searchs"><a href="javascript:publish()" title="">发布房屋信息</a></LABEL>
+    <LABEL class="ui-green searchs"><a href="javascript:window.location=getContextPath()+'/page/list.htm'" title="">租房</a></LABEL>
 <LABEL class=ui-green><INPUT onclick='logOut()' value="退       出" type=button name=search></LABEL>
 </DIV></DIV>
 <DIV id="tb" class="main wrap">
@@ -28,7 +30,7 @@ rel=stylesheet type=text/css href="../css/style.css">
         <DT><A href="javascript:void(0)" @click="queryByHouseId(houseExt.id)" target="_blank" >{{houseExt.title}}</A></DT>
         <DD>{{houseExt.street.name}},{{houseExt.floorage}}平米<BR>联系方式：{{houseExt.contact}} </DD></DL></TD>
     <TD class=house-type><LABEL class=ui-green><INPUT @click="update(houseExt.id)" value="修改" type=button name=search></LABEL></TD>
-    <TD class=house-price><LABEL class=ui-green><INPUT value="删    除" type=button name=search></LABEL></TD>
+    <TD class=house-price><LABEL class=ui-green><INPUT value="删    除" type=button name=search @click="deleteById(houseExt.id)"></LABEL></TD>
   </TR>
   </TBODY>
 </TABLE></DIV>
@@ -77,6 +79,9 @@ var vm = new Vue({
         pageInfo: null
     },
     methods: {
+        deleteById(id){
+            location.href=getContextPath()+'/HouseRent/deleteHouse?id='+id
+        },
     pageClick(n) {
         this.page = n;
         this.$mount();

@@ -99,10 +99,10 @@
 
                 $(id).append(option[i]);
             }
-            if(vm.$data.house != null&&id==='#street_id'){
-                $(id).val(vm.$data.house.street.id)
-            }if(vm.$data.house != null&&id==='#district_id'){
+            if(vm.$data.house != null&&id==='#district_id'){
                 $(id).val(vm.$data.house.district.id);
+            }if(vm.$data.house != null&&id==='#street_id'){
+                $(id).val(vm.$data.house.street.id)
             }
         }
         $("#img01").ready(
@@ -144,6 +144,8 @@
                         <TBODY>
                         <TR>
                             <TD><INPUT id=userId class=text type=hidden name=userId></TD>
+                            <TD><INPUT id=houseId class=text type=hidden name=id v-bind:value="house!=null?house.id:''"></TD>
+                            <TD><INPUT id=path class=text type=hidden name=path v-bind:value="house!=null?house.path:''"></TD>
                         </TR>
                         <TR>
                         <TR>
@@ -176,8 +178,7 @@
                             <TD class=field>图片信息：</TD>
                             <div>
                                 <TD><img  width="140" height="100" id="img01"  v-bind:src="filePath"/>
-                                    <INPUT id=picture type="file" name=picture onchange="changePicture(this)"
-                                           v-bind:value="house!=null?filePath:''"></TD>
+                                    <INPUT id=picture type="file" name=picture onchange="changePicture(this)"></TD>
                             </div>
                         </TR>
                         <TR>

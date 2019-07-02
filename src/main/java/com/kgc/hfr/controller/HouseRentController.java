@@ -6,13 +6,12 @@ import com.kgc.hfr.entity.HouseExt;
 import com.kgc.hfr.service.HouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Controller
 @RequestMapping(value = "/HouseRent/")
@@ -23,6 +22,11 @@ public class HouseRentController {
 	public String insertHouse(House house, @RequestParam(value = "picture",required = false) CommonsMultipartFile picture){
 		System.out.println("house = " + house);
 		String targetPath="F:\\images\\";
+		if(house.getId()!=null&&!house.getId().equals("")){
+			int update = service.updateByPrimaryKeySelective(targetPath,house, picture);
+			System.out.println("update = " + update);
+			return "guanli";
+		}
 		int insert = service.insertSelective(house, targetPath, picture);
 		System.out.println("insert = " + insert);
 		return "guanli";
@@ -50,5 +54,13 @@ public class HouseRentController {
 		HouseExt house = service.selectByPrimaryKey(id);
 		System.out.println("house = " + house);
 		return house;
+	}
+	@RequestMapping(value = "deleteHouse")
+	public String deleteHouse(@RequestParam(value = "id") String id){
+		System.out.println("删除");
+		System.out.println("id = " + id);
+		int delete = service.deleteByPrimaryKey(id);
+		System.out.println("delete = " + delete);
+		return "guanli";
 	}
 }

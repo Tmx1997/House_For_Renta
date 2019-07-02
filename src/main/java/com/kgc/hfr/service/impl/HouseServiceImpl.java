@@ -34,7 +34,7 @@ public class HouseServiceImpl implements HouseService {
 
 	@Override
 	public int deleteByPrimaryKey(String id) {
-		return 0;
+		return mapper.deleteByPrimaryKey(id);
 	}
 
 	@Override
@@ -104,8 +104,16 @@ public class HouseServiceImpl implements HouseService {
 	}
 
 	@Override
-	public int updateByPrimaryKeySelective(House record) {
-		return 0;
+	public int updateByPrimaryKeySelective(String targetPath,House record,CommonsMultipartFile picture) {
+		if(picture.getOriginalFilename()!=null&&!picture.getOriginalFilename().equals("")){
+			Map<String, Object> map = FileUploadUtil.fileUpLoad(targetPath, picture);
+			String path = (String) map.get("savePath");
+			String deletePath = targetPath + record.getPath();
+			new File(deletePath).delete();
+			record.setPath(path);
+		}
+		int update = mapper.updateByPrimaryKeySelective(record);
+		return update;
 	}
 
 	@Override
