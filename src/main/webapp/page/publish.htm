@@ -1,4 +1,4 @@
-﻿<HTML xmlns="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+﻿<HTML xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <HEAD><TITLE>青鸟租房 -发布房屋信息</TITLE>
     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
     <LINK
@@ -49,7 +49,13 @@
                     getContextPath() + "/District/getDistrict",
                     function callback(result) {
                         loadSelect("#district_id", result);
-                        getStreet(result.rows[0].id);
+                        var id;
+                        if(vm.$data.house===null){
+                            id=result.rows[0].id;
+                        }else{
+                            id=vm.$data.house.district.id;
+                        }
+                        getStreet(id);
 
                     }
                     , "json")
@@ -90,21 +96,24 @@
                 html = data[i].name;
                 value = data[i].id;
                 option[i] = ["<option value='", value, "'>", html, "</option>"].join("");
-                if (vm.$data.house != null) {
-                    if (id == '#street_id' && vm.$data.house.street.id === value) {
-                        console.log(option[i].value);
-                        console.log("控制器的:" + vm.$data.house.street.id);
-                        $(option[i]).attr("selected", "selected")
-                    }
-                    if (id == '#district_id' && vm.$data.house.district.id === value) {
-                        $(option[i]).attr("selected", "selected");
-                        console.log(option[i].value);
-                        console.log("控制器的:" + vm.$data.house.street.id);
-                    }
-                }
+
                 $(id).append(option[i]);
             }
+            if(vm.$data.house != null&&id==='#street_id'){
+                $(id).val(vm.$data.house.street.id)
+            }if(vm.$data.house != null&&id==='#district_id'){
+                $(id).val(vm.$data.house.district.id);
+            }
         }
+        $("#img01").ready(
+            function () {
+                if(vm.$data.house!=null){
+                    $(this).attr("display","block");
+                }else {
+                    $(this).attr("display","none");
+                }
+            }
+        );
 
         //表单提交
         function houseRent() {
@@ -157,18 +166,16 @@
                         </TR>
                         <TR>
                             <TD class=field>发布日期：</TD>
-                            <TD><INPUT class=text type="date" name=pubdate v-bind:value="house!=null?date:null"></TD>
+                            <TD><INPUT class=text type="date" name=pubdate v-bind:value="house!=null?dateFormat(house.pubdate):null"></TD>
                         </TR>
                         <TR>
                             <TD class=field>位　　置：</TD>
-                            <TD>区：<SELECT class=text id="district_id"></SELECT> 街：<SELECT class=text
-                                                                                          name=streetId
-                                                                                          id="street_id"></SELECT></TD>
+                            <TD>区：<SELECT class=text id="district_id"></SELECT> 街：<SELECT class=text name=streetId id="street_id"></SELECT></TD>
                         </TR>
                         <TR>
                             <TD class=field>图片信息：</TD>
                             <div>
-                                <TD><img src="#" width="140" height="100" id="img01" style="display: none"/>
+                                <TD><img  width="140" height="100" id="img01"  v-bind:src="filePath"/>
                                     <INPUT id=picture type="file" name=picture onchange="changePicture(this)"
                                            v-bind:value="house!=null?filePath:''"></TD>
                             </div>
@@ -204,20 +211,21 @@
         el: "#add_action",
         data: {
             house: null,
-            date: null,
             filePath: ''
         },
         methods:{
-            timestampToTime (row, column) {
-                var date = new Date(row.cjsj) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
-                var Y = date.getFullYear() + '-'
-                var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
-                var D = date.getDate() + ' '
-                var h = date.getHours() + ':'
-                var m = date.getMinutes() + ':'
-                var s = date.getSeconds()
-                return Y+M+D+h+m+s
-                console.log(timestampToTime (1533293827000))
+            dateFormat (currentTime) {
+
+                var date = new Date(currentTime);
+                //添加0
+                function addZero(num){
+                    if(num<10){
+                        num = '0' + num;
+                    }
+                    return num;
+                }
+                date = (date.getFullYear()) +"-" + addZero(date.getMonth() + 1 ) + "-" + addZero(date.getDate());
+                return date;
             }
         },
         mounted: function () {
@@ -231,7 +239,6 @@
                 .then(function (response) {
                     console.log(response);
                     that.house = response.data;
-                    that.date =that.methods.timestampToTime(response.data.pubdate);
                     that.filePath = "http://localhost:81/" + response.data.path;
                 })
         }

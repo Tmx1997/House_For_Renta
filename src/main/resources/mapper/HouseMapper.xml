@@ -18,17 +18,17 @@
   </resultMap>
     <resultMap id="HouseExtResultMap" type="HouseExt" extends="BaseResultMap">
         <association property="street" javaType="Street">
-            <id property="id" column="id"/>
-            <result property="name" column="name"/>
-            <result property="districtId" column="districtId"/>
+            <id property="id" column="sid"/>
+            <result property="name" column="sname"/>
+            <result property="districtId" column="DISTRICT_ID"/>
         </association>
       <association property="type" javaType="Type">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
+        <id property="id" column="tid"/>
+        <result property="name" column="tname"/>
       </association>
       <association property="district" javaType="District">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
+        <id property="id" column="did"/>
+        <result property="name" column="dname"/>
       </association>
     </resultMap>
   <sql id="Example_Where_Clause">
@@ -94,8 +94,8 @@
     ispass, isdel, path
   </sql>
     <sql id="HouseExt_Column_List">
-    h.ID, h.USER_ID, h.TYPE_ID, h.TITLE, h.DESCRIPTION, h.PRICE, h.PUBDATE, h.FLOORAGE, h.CONTACT, s.id,
-    s.name,s.DISTRICT_ID,h.ispass, h.isdel, h.path,t.id,t.name ,d.id,d.name
+    h.ID, h.USER_ID, h.TYPE_ID, h.TITLE, h.DESCRIPTION, h.PRICE, h.PUBDATE, h.FLOORAGE, h.CONTACT, s.id as sid,
+    s.name as sname,s.DISTRICT_ID,h.ispass, h.isdel, h.path,t.id as tid,t.name as tname,d.id as did,d.name as dname
   </sql>
   <select id="selectByExample" parameterType="com.kgc.hfr.entity.HouseExample" resultMap="BaseResultMap">
     select
