@@ -4,10 +4,12 @@ import com.github.pagehelper.PageInfo;
 import com.kgc.hfr.entity.House;
 import com.kgc.hfr.entity.HouseExample;
 import com.kgc.hfr.entity.HouseExt;
+import com.kgc.hfr.entity.HouseExtExample;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface HouseService {
     long countByExample(HouseExample example);
@@ -20,7 +22,7 @@ public interface HouseService {
 
     int insertSelective(House record, String targetPath, CommonsMultipartFile picture);
 
-    List<House> selectByExample();
+    PageInfo<HouseExt> selectByExample(HouseExtExample extExample, Integer page, Integer pageSize);
     PageInfo<House> selectByExample(Integer page, Integer rows, Integer userId);
     PageInfo<HouseExt> selectByUserId(Integer page, Integer rows, Integer userId);
 

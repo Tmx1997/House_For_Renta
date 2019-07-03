@@ -51,6 +51,86 @@ function logOut() {
     delCookie("userId");
     document.location=getContextPath()+'/page/login.htm'
 }
+//获取街道
+function getStreet(id) {
+    $("#street_id").empty();
+    var option = ["<option>", "--请选择--", "</option>"].join("");
+    $("#street_id").append(option);
+    $.post(
+        getContextPath() + "/District/getStreets",
+        {dId: id},
+        function (result) {
+            loadSelect("#street_id", result);
+        }
+        , "json")
+}
+//获取类型
+function getType() {
+    $.post(
+        getContextPath() + "/Type/getAll",
+        function callback(result) {
+            var types = result.rows;
+            var option = [];
+            for (var i = 0; i < types.length; i++) {
+                option[i] = ["<option value='", types[i].id, "'>", types[i].name, "</option>"].join("");
+                $("#type_id").append(option[i]);
+            }
+
+        }
+        , "json")
+}
+//获取区域
+function getDistrict() {
+    $.post(
+        getContextPath() + "/District/getDistrict",
+        function callback(result) {
+            loadSelect("#district_id", result);
+            var id;
+            if(vm.$data.house!=null){
+                id=vm.$data.house.district.id;
+            }else{
+                id=result.rows[0].id;
+            }
+            getStreet(id);
+
+        }
+        , "json")
+}
+//加载下拉框
+function loadSelect(id, result) {
+    var data = result.rows;
+    var option = [];
+    var value;
+    var html;
+    for (var i = 0; i < data.length; i++) {
+        html = data[i].name;
+        value = data[i].id;
+        option[i] = ["<option value='", value, "'>", html, "</option>"].join("");
+
+        $(id).append(option[i]);
+    }
+    if(vm.$data.house != null&&id==='#district_id'){
+        $(id).val(vm.$data.house.district.id);
+    }if(vm.$data.house != null&&id==='#street_id'){
+        $(id).val(vm.$data.house.street.id)
+    }
+}
+//form表单序列化json对象
+$.fn.serializeObject = function() {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name]) {
+            if (!o[this.name].push) {
+                o[this.name] = [ o[this.name] ];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
 UrlParm = function() { // url参数
     var data, index;
     (function init() {

@@ -44,8 +44,15 @@ rel=stylesheet type=text/css href="../css/style.css">
 <DL>
   <DT>青鸟租房 © 2018 北大青鸟 京ICP证1000001号</DT>
   <DD>关于我们 · 联系方式 · 意见反馈 · 帮助中心</DD></DL></DIV>
+</DIV>
 </BODY>
 <script type="text/javascript">
+    //cookie判断未登录则返回登录页面
+    logDetector();
+    //页眉
+    $("#welcome").ready(
+        getPageHeader()
+    );
     var vm=new Vue({
         el:"#app",
         data:{
@@ -54,7 +61,7 @@ rel=stylesheet type=text/css href="../css/style.css">
         },
         methods:{
             dateFormat(){
-                var date=new Date(this.house.pubdate)
+                var date=new Date(this.house.pubdate);
                 var year=date.getFullYear();
                 var month=date.getMonth();
                 var day=date.getDate();

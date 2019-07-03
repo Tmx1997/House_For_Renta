@@ -3,6 +3,7 @@ package com.kgc.hfr.controller;
 import com.github.pagehelper.PageInfo;
 import com.kgc.hfr.entity.House;
 import com.kgc.hfr.entity.HouseExt;
+import com.kgc.hfr.entity.HouseExtExample;
 import com.kgc.hfr.service.HouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,7 @@ public class HouseRentController {
 		}
 		int insert = service.insertSelective(house, targetPath, picture);
 		System.out.println("insert = " + insert);
-		return "guanli";
+		return "redirect:returnHouseManage";
 	}
 	@RequestMapping(value = "selectHouse")
 	@ResponseBody
@@ -61,6 +62,22 @@ public class HouseRentController {
 		System.out.println("id = " + id);
 		int delete = service.deleteByPrimaryKey(id);
 		System.out.println("delete = " + delete);
+		return "redirect:returnHouseManage";
+	}
+	@RequestMapping(value = "returnHouseManage")
+	public String returnHouseManage(){
 		return "guanli";
+	}
+	@RequestMapping(value = "queryByConditions")
+	@ResponseBody
+	public Map<String, Object> queryByConditions(@RequestBody HouseExtExample extExample, @RequestParam(value = "page",required = false,defaultValue = "1") Integer page){
+		Integer pageSize=4;
+		System.out.println("条件查询");
+		System.out.println("extExample = " + extExample);
+		System.out.println("page = " + page);
+		PageInfo<HouseExt>pageInfo=service.selectByExample(extExample,page,pageSize);
+		Map<String,Object>map=new HashMap<>();
+		map.put("pageInfo", pageInfo);
+		return map;
 	}
 }

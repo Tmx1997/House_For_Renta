@@ -50,10 +50,6 @@ dojoType="struts:BindAnchor" >{{n}}</A>
 <script type="text/javascript">
     //cookie判断未登录则返回登录页面
     logDetector();
-//发布
-    function publish() {
-        location.href=getContextPath()+"/Register/returnPublish"
-    }
     //页眉
     $("#welcome").ready(
         getPageHeader()
@@ -62,6 +58,10 @@ dojoType="struts:BindAnchor" >{{n}}</A>
     function getId() {
         console.log(getCookie("userId"));
         return getCookie("userId");
+    }
+    //发布
+    function publish() {
+        location.href=getContextPath()+"/Register/returnPublish"
     }
 
 var that;

@@ -66,7 +66,7 @@ public class RegisterController {
 				response.addCookie(c);
 			}
 			System.out.println("guanli");
-			return "guanli";
+			return "redirect:/HouseRent/returnHouseManage";
 		}
 		 return "login";
 	}

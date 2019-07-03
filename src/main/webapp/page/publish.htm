@@ -27,39 +27,11 @@
         });
         //获取类型
         $("#type_id").ready(
-            function () {
-                $.post(
-                    getContextPath() + "/Type/getAll",
-                    function callback(result) {
-                        var types = result.rows;
-                        var option = [];
-                        for (var i = 0; i < types.length; i++) {
-                            option[i] = ["<option value='", types[i].id, "'>", types[i].name, "</option>"].join("");
-                            $("#type_id").append(option[i]);
-                        }
-
-                    }
-                    , "json")
-            }
+            getType()
         );
         //节点(district_id)加载后获取区域
         $("#district_id").ready(
-            function () {
-                $.post(
-                    getContextPath() + "/District/getDistrict",
-                    function callback(result) {
-                        loadSelect("#district_id", result);
-                        var id;
-                        if(vm.$data.house===null){
-                            id=result.rows[0].id;
-                        }else{
-                            id=vm.$data.house.district.id;
-                        }
-                        getStreet(id);
-
-                    }
-                    , "json")
-            }
+            getDistrict()
         );
         //获取街道
         $("#street_id").ready(
@@ -72,39 +44,7 @@
             }
         );
 
-        //getStreet通用方法
-        function getStreet(id) {
-            $("#street_id").empty();
-            var option = ["<option>", "--请选择--", "</option>"].join("");
-            $("#street_id").append(option);
-            $.post(
-                getContextPath() + "/District/getStreets",
-                {dId: id},
-                function (result) {
-                    loadSelect("#street_id", result);
-                }
-                , "json")
-        }
-
-        //加载下拉框回调函数
-        function loadSelect(id, result) {
-            var data = result.rows;
-            var option = [];
-            var value;
-            var html;
-            for (var i = 0; i < data.length; i++) {
-                html = data[i].name;
-                value = data[i].id;
-                option[i] = ["<option value='", value, "'>", html, "</option>"].join("");
-
-                $(id).append(option[i]);
-            }
-            if(vm.$data.house != null&&id==='#district_id'){
-                $(id).val(vm.$data.house.district.id);
-            }if(vm.$data.house != null&&id==='#street_id'){
-                $(id).val(vm.$data.house.street.id)
-            }
-        }
+        //图片
         $("#img01").ready(
             function () {
                 if(vm.$data.house!=null){
@@ -208,6 +148,12 @@
 </DIV>
 </BODY>
 <script type="text/javascript">
+    //cookie判断未登录则返回登录页面
+    logDetector();
+    //页眉
+    $("#welcome").ready(
+        getPageHeader()
+    );
     var vm = new Vue({
         el: "#add_action",
         data: {

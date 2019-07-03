@@ -5,6 +5,7 @@ import com.kgc.hfr.entity.HouseExample;
 import java.util.List;
 
 import com.kgc.hfr.entity.HouseExt;
+import com.kgc.hfr.entity.HouseExtExample;
 import org.apache.ibatis.annotations.Param;
 
 public interface HouseMapper {
@@ -19,6 +20,7 @@ public interface HouseMapper {
     int insertSelective(House record);
 
     List<House> selectByExample(HouseExample example);
+    List<HouseExt> selectByConditions(HouseExtExample example);
     List<HouseExt> selectByUserId(Integer userId);
 
     HouseExt selectByPrimaryKey(String id);

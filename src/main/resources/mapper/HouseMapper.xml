@@ -360,4 +360,33 @@
     )INNER JOIN house h
     ON h.STREET_ID=s.ID) ON t.ID=h.TYPE_ID WHERE h.USER_ID=#{userId}
   </select>
+  <select id="selectByConditions" resultMap="HouseExtResultMap" parameterType="HouseExtExample">
+    SELECT <include refid="HouseExt_Column_List"/> FROM TYPE t INNER JOIN ((district d INNER JOIN
+    street s ON d.ID=s.DISTRICT_ID
+    )INNER JOIN house h
+    ON h.STREET_ID=s.ID) ON t.ID=h.TYPE_ID
+    <where>
+      <if test="price!=null and price!=''">
+        and h.PRICE between #{startPrice} and #{endPrice}
+      </if>
+      <if test="districtID!=null and districtID!=''">
+          and d.ID=#{districtID}
+      </if>
+      <if test="type_id!=null and type_id!=''">
+          and h.TYPE_ID=#{type_id}
+      </if>
+      <if test="floorage!=null and floorage!=''">
+          and h.FLOORAGE between #{startFloorage} and #{endFloorage}
+      </if>
+      <if test="startPubdate!=null">
+          and h.PUBDATE &gt;=#{startPubdate}
+      </if>
+      <if test="endPubdate!=null">
+          and h.PUBDATE &lt;=#{endPubdate}
+      </if>
+      <if test="title!=null and title!=''">
+          and h.TITLE=#{title}
+      </if>
+    </where>
+  </select>
 </mapper>

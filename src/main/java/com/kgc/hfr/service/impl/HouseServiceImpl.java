@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.kgc.hfr.entity.House;
 import com.kgc.hfr.entity.HouseExample;
 import com.kgc.hfr.entity.HouseExt;
+import com.kgc.hfr.entity.HouseExtExample;
 import com.kgc.hfr.mapper.HouseMapper;
 import com.kgc.hfr.service.HouseService;
 import com.kgc.hfr.util.FileUploadUtil;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,9 +70,20 @@ public class HouseServiceImpl implements HouseService {
 	}
 
 	@Override
-	public List<House> selectByExample() {
-		HouseExample example=new HouseExample();
-		return mapper.selectByExample(example);
+	public PageInfo<HouseExt> selectByExample(HouseExtExample extExample, Integer page,Integer pageSize) {
+		if(extExample.getPrice()!=null&&extExample.getPrice()!=""){
+			String[] split = extExample.getPrice().split("-");
+			extExample.setStartPrice(Long.valueOf(split[0]));
+			extExample.setEndPrice(Long.valueOf(split[1]));
+		}
+		if(extExample.getFloorage()!=null&&extExample.getFloorage()!=""){
+			String[] split = extExample.getFloorage().split("-");
+			extExample.setStartFloorage(Integer.valueOf(split[0]));
+			extExample.setEndFloorage(Integer.valueOf(split[1]));
+		}
+		PageHelper.startPage(page,pageSize );
+		List<HouseExt> list = mapper.selectByConditions(extExample);
+		return new PageInfo<>(list);
 	}
 	public PageInfo<House> selectByExample(Integer page, Integer rows, Integer userId) {
 		HouseExample example=new HouseExample();
