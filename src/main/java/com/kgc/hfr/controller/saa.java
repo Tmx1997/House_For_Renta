@@ -13,4 +13,7 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class saa {
+  public static void mian(String[]args){
+  System.out.prinrln(233);
+  }
 }
